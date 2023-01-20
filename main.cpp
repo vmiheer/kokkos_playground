@@ -1,8 +1,14 @@
 #include <iostream>
+#include <Kokkos_Core.hpp>
+
 using namespace std;
 
-int main(int argc, char const *argv[])
+int main(int argc, char *argv[])
 {
-    cout << "Hello World!" << endl;
+    Kokkos::initialize(argc, argv);
+    {
+        cout << "Hello World!" << endl;
+    }
+    Kokkos::finalize();
     return 0;
 }
