@@ -1,0 +1,2 @@
+project(kokkos_playground)
+add_executable(kokkos_playground main.cpp)
