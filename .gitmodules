@@ -3,4 +3,4 @@
 	url = git@github.com:kokkos/kokkos.git
 [submodule "taco"]
 	path = taco
-	url = git@github.com:tensor-compiler/taco.git
+	url = git@github.com:vmiheer/taco.git
