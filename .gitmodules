@@ -4,3 +4,6 @@
 [submodule "taco"]
 	path = taco
 	url = git@github.com:vmiheer/taco.git
+[submodule "fmt"]
+	path = fmt
+	url = git@github.com:fmtlib/fmt.git
