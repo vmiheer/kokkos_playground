@@ -7,16 +7,16 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 find_package(Git QUIET)
 if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
 # Update submodules as needed
-    option(GIT_SUBMODULE "Check submodules during build" ON)
-    if(GIT_SUBMODULE)
-        message(STATUS "Submodule update")
-        execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
-                        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-                        RESULT_VARIABLE GIT_SUBMOD_RESULT)
-        if(NOT GIT_SUBMOD_RESULT EQUAL "0")
-            message(FATAL_ERROR "git submodule update --init --recursive failed with ${GIT_SUBMOD_RESULT}, please checkout submodules")
-        endif()
+  option(GIT_SUBMODULE "Check submodules during build" ON)
+  if(GIT_SUBMODULE)
+    message(STATUS "Submodule update")
+    execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
+      WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+      RESULT_VARIABLE GIT_SUBMOD_RESULT)
+    if(NOT GIT_SUBMOD_RESULT EQUAL "0")
+      message(FATAL_ERROR "git submodule update --init --recursive failed with ${GIT_SUBMOD_RESULT}, please checkout submodules")
     endif()
+  endif()
 endif()
 
 if(NOT EXISTS "${PROJECT_SOURCE_DIR}/kokkos/CMakeLists.txt" OR NOT EXISTS "${PROJECT_SOURCE_DIR}/taco/CMakeLists.txt")
@@ -25,9 +25,17 @@ endif()
 
 add_subdirectory(kokkos)
 add_subdirectory(taco)
+add_subdirectory(fmt)
 
-add_executable(kokkos_playground main.cpp)
-target_include_directories(kokkos_playground PRIVATE
+function (add_example NAME)
+  cmake_path(GET NAME STEM EXEC_NAME)
+  message(STATUS "Adding example ${EXEC_NAME}")
+  add_executable(${EXEC_NAME} ${NAME})
+  target_link_libraries(${EXEC_NAME} Kokkos::kokkos fmt::fmt)
+endfunction()
+
+add_example(taco_example.cpp)
+target_include_directories(taco_example PRIVATE
   ${CMAKE_SOURCE_DIR}/taco/include
   ${CMAKE_BINARY_DIR}/taco/include)
-target_link_libraries(kokkos_playground Kokkos::kokkos taco)
+target_link_libraries(taco_example taco)
