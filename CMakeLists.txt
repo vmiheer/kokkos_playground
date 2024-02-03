@@ -32,6 +32,7 @@ function (add_example NAME)
   message(STATUS "Adding example ${EXEC_NAME}")
   add_executable(${EXEC_NAME} ${NAME})
   target_link_libraries(${EXEC_NAME} Kokkos::kokkos fmt::fmt)
+  target_compile_features(${EXEC_NAME} PRIVATE cxx_std_23)
 endfunction()
 
 add_example(taco_example.cpp)
@@ -39,3 +40,5 @@ target_include_directories(taco_example PRIVATE
   ${CMAKE_SOURCE_DIR}/taco/include
   ${CMAKE_BINARY_DIR}/taco/include)
 target_link_libraries(taco_example taco)
+
+add_example(subview.cpp)
