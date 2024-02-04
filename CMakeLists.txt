@@ -23,10 +23,6 @@ if(NOT EXISTS "${PROJECT_SOURCE_DIR}/kokkos/CMakeLists.txt" OR NOT EXISTS "${PRO
     message(FATAL_ERROR "The submodules were not downloaded! GIT_SUBMODULE was turned off or failed. Please update submodules and try again.")
 endif()
 
-add_subdirectory(kokkos)
-add_subdirectory(taco)
-add_subdirectory(fmt)
-
 function (add_example NAME)
   cmake_path(GET NAME STEM EXEC_NAME)
   message(STATUS "Adding example ${EXEC_NAME}")
@@ -34,6 +30,14 @@ function (add_example NAME)
   target_link_libraries(${EXEC_NAME} Kokkos::kokkos fmt::fmt)
   target_compile_features(${EXEC_NAME} PRIVATE cxx_std_23)
 endfunction()
+
+# Libs we link against
+add_subdirectory(kokkos)
+add_subdirectory(kokkos-kernels)
+add_subdirectory(taco)
+add_subdirectory(fmt)
+
+add_subdirectory(src)
 
 add_example(taco_example.cpp)
 target_include_directories(taco_example PRIVATE
