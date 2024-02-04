@@ -25,7 +25,8 @@
       "name": "default",
       "displayName": "Default",
       "description": "Default preset",
-      "configurePreset": "default"
+      "configurePreset": "default",
+      "jobs": 24
     }
   ],
   "workflowPresets": [
