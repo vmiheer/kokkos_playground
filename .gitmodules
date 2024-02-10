@@ -10,3 +10,6 @@
 [submodule "kokkos-kernels"]
 	path = kokkos-kernels
 	url = git@github.com:kokkos/kokkos-kernels.git
+[submodule "kokkos-remote-spaces"]
+	path = kokkos-remote-spaces
+	url = git@github.com:kokkos/kokkos-remote-spaces.git
