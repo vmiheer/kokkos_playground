@@ -1,0 +1,3 @@
+add_example(kokkos_kernels_spmv.cpp)
+target_link_libraries(kokkos_kernels_spmv KokkosKernels::kokkoskernels)
+target_include_directories(kokkos_kernels_spmv PRIVATE ${KokkosKernels_SOURCE_DIR})
