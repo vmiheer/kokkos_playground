@@ -5,3 +5,5 @@
 /compile_commands.json
 /.cache/
 /.vscode/
+/*_install/
+.gdb_history
