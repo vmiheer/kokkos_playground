@@ -22,7 +22,8 @@ cmake --build . -j 24 --target install
 cd $WORKSPACE/kokkos-remote-spaces
 mkdir -p build && cd build
 if [[ ! -f build/CMakeCache.txt ]]; then
-  cmake -DCMAKE_INSTALL_PREFIX=$Kokkos_ROOT -DKRS_ENABLE_MPISPACE=ON ..
+  cmake -DCMAKE_INSTALL_PREFIX=$Kokkos_ROOT -DKRS_ENABLE_MPISPACE=ON \
+    -DKRS_ENABLE_APPLICATIONS=ON -DKRS_ENABLE_TESTS=ON ..
 fi
 cmake --build . -j 24 --target install
 cd $WORKSPACE
