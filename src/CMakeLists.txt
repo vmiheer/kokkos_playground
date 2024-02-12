@@ -1,1 +1,2 @@
 add_subdirectory(kokkos_kernels_spmv)
+add_subdirectory(kokkos_matmul)
