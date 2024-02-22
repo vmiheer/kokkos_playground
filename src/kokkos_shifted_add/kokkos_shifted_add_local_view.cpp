@@ -7,12 +7,7 @@
 #include "fmt/core.h"
 #include <fmt/format.h>
 
-// #include "Kokkos_Core.hpp"
 #include <Kokkos_RemoteSpaces.hpp>
-// #include <Kokkos_RemoteSpaces_ViewLayout.hpp>
-// #include <Kokkos_RemoteSpaces_Helpers.hpp>
-// #include <impl/Kokkos_HostThreadTeam.hpp>
-
 // clang-format on
 
 using fmt::println;
@@ -72,6 +67,7 @@ int main(int argc, char *argv[]) {
     using PartitionedView1D =
         Kokkos::View<double **, PartitionedLayoutRight, RemoteSpace_t>;
     using Local1DView = typename PartitionedView1D::HostMirror;
+    using TeamPolicy_t = Kokkos::TeamPolicy<>;
 
     int size, rank;
     MPI_Comm_size(MPI_COMM_WORLD, &size);
@@ -85,15 +81,32 @@ int main(int argc, char *argv[]) {
     parallel_for(
         "init", (A.extent(1)),
         KOKKOS_LAMBDA(auto i) { A(rank, i) = rank * M + i; });
-
-    for (auto i : std::ranges::iota_view(0, int(rank == 0 ? 1 : 0) * size)) {
-      fmt::print("MPI_COMM_WORLD rank: {}: ", i);
-      auto range = std::make_pair(size_t(0), M);
-      for (auto j : std::ranges::iota_view(range.first, range.second))
-        fmt::print("{}, ", double(A(i, j)));
-      fmt::println("");
+    RemoteSpace_t().fence();
+    for (auto i : std::ranges::iota_view(0, size)) {
+      if (rank == 0) {
+        fmt::print("MPI_COMM_WORLD rank: {}: ", i);
+        auto range = std::make_pair(size_t(0), M);
+        auto ar = Kokkos::subview(A, make_pair(i, i + 1), range);
+        auto al = Kokkos::subview(A, make_pair(rank, rank + 1), range);
+        Kokkos::parallel_for(
+            "Team", TeamPolicy_t(1, 1),
+            KOKKOS_LAMBDA(typename TeamPolicy_t::member_type team) {
+              Kokkos::single(Kokkos::PerTeam(team), [&]() {
+                Kokkos::Experimental::RemoteSpaces::local_deep_copy(al, ar);
+              });
+            });
+        if (false) {
+          Kokkos::deep_copy(Alocal, al);
+          for (auto j : std::ranges::iota_view(range.first, range.second))
+            fmt::print("{}, ", double(Alocal(0, j)));
+        } else {
+          for (auto j : std::ranges::iota_view(range.first, range.second))
+            fmt::print("{}, ", double(al(0, j)));
+        }
+        fmt::println("");
+      }
+      MPI_Barrier(MPI_COMM_WORLD);
     }
-    MPI_Barrier(MPI_COMM_WORLD);
   }
   Kokkos::finalize();
   MPI_Finalize();
